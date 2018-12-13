@@ -12,27 +12,30 @@
 #*确保每个ForeignKey都已将“on_delete”设置为所需的行为。
 #*如果希望允许Django创建、修改和删除表，请删除`managed=False'行
 #可以随意重命名模型，但不要重命名db_table值或字段名。
-
-
+# on_delete=models.CASCADE
+# python manage.py shell
+# from  common.models import Dept,Emp
+# Dept.objects.all() -- Emp.objects.all()
 from django.db import models
-class Tbdept(models.Model):
-    dno = models.IntegerField(primary_key=True)
-    dname = models.CharField(unique=True, max_length=10)
-    dloc = models.CharField(max_length=20)
+class Dept(models.Model):
+    no = models.IntegerField(primary_key=True,db_column='dno')
+    name = models.CharField(unique=True, max_length=10,db_column='dname')
+    location = models.CharField(max_length=20,db_column='dloc')
 
     class Meta:
         managed = False
         db_table = 'TbDept'
 
 
-class Tbemp(models.Model):
-    eno = models.IntegerField(primary_key=True)
-    ename = models.CharField(max_length=20)
+class Emp(models.Model):
+    no = models.IntegerField(primary_key=True,db_column='eno')
+    name = models.CharField(max_length=20,db_column='ename')
     job = models.CharField(max_length=20)
-    mgr = models.IntegerField(blank=True, null=True)
+
+    mgr = models.ForeignKey('self',on_delete=models.PROTECT,db_column='mgr',blank=True,null=True)
     sal = models.IntegerField()
     comm = models.IntegerField(blank=True, null=True)
-    dno = models.ForeignKey(Tbdept, models.DO_NOTHING, db_column='dno', blank=True, null=True)
+    dno = models.ForeignKey('Dept', on_delete=models.PROTECT, db_column='dno', blank=True, null=True)
 
     class Meta:
         managed = False
